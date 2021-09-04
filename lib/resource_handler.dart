@@ -62,7 +62,7 @@ mixin ResourceHandler {
     List<T>? currentValue = listResource.valueOrNull;
 
     if (restart) {
-      emit(listResource.copyWithFetching(currentOverride: []));
+      emit(listResource.copyWithFetching(current: []));
       currentValue = [];
     } else {
       if (pageParams.page == listResource.firstPageParams.page) {
@@ -329,9 +329,12 @@ mixin Identifiable<T> {
 }
 
 class PageDetails<T> {
-  PageDetails({required this.pageParams, required this.items});
+  PageDetails({
+    required this.items,
+    this.pageParams,
+  });
 
-  final PageParams pageParams;
+  final PageParams? pageParams;
   final List<T> items;
 }
 
@@ -411,13 +414,13 @@ class ListResource<T extends Identifiable<dynamic>, E, PageResponseType> extends
       ));
 
   ListResource<T, E, PageResponseType> copyWithFetching({
-    List<T>? currentOverride,
-    List<T>? optimisticOverride,
+    List<T>? current,
+    List<T>? optimistic,
     FetchInfo info = const FetchInfo.none(),
   }) =>
       copyWith(ResourceState.fetching(
-        currentValue: currentOverride,
-        optimisticValue: optimisticOverride,
+        currentValue: current,
+        optimisticValue: optimistic,
         info: info,
       ));
 
@@ -447,26 +450,4 @@ class ListResource<T extends Identifiable<dynamic>, E, PageResponseType> extends
       firstPageParams: firstPageParams ?? this.firstPageParams,
     );
   }
-
-  // @override
-  // ListResource<T, E, PageResponseType> copyWith(
-  //   ResourceState<List<T>, E> state, {
-  //   PageParams? pageParams,
-  //   PageParams? firstPageParams,
-  // }) {
-  //   final _pageParams =
-  //       state.isUnavailable ? pageParams ?? firstPageParams ?? this.firstPageParams : pageParams ?? this.pageParams;
-
-  //   return ListResource<T, E, PageResponseType>._(
-  //     fetchPage: fetchPage,
-  //     extractPageDetails: extractPageDetails,
-  //     state: state,
-  //     onError: onError,
-  //     onUpdated: onUpdated,
-  //     onFetched: onFetched,
-  //     updateItem: updateItem,
-  //     pageParams: _pageParams,
-  //     firstPageParams: firstPageParams ?? this.firstPageParams,
-  //   );
-  // }
 }
